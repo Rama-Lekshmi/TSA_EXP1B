@@ -1,5 +1,8 @@
+### DEVELOPED BY: RAMA E.K. LEKSHMI
+### REGISTER NUMBER: 212222240082
+### DATE:
 # Ex.No: 1B                     CONVERSION OF NON STATIONARY TO STATIONARY DATA
-# Date: 
+ 
 
 ### AIM:
 To perform regular differncing,seasonal adjustment and log transformatio on international airline passenger data
@@ -18,48 +21,49 @@ REGISTER NUMBER: 212222240082
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import adfuller
 ```
 Load the data
 ```python
 file_path = '/mnt/data/AirPassengers.csv'
 data = pd.read_csv(file_path, index_col='Month', parse_dates=True)
 ```
-Regular Differencing (without log transformation)
+Visualize the original data
+```python
+plt.figure(figsize=(10, 6))
+plt.plot(data, label='Original Data')
+plt.title('Original Time Series')
+plt.legend()
+plt.show()
+```
+Perform Augmented Dickey-Fuller test
+```python
+def adf_test(series):
+    result = adfuller(series)
+    print('ADF Statistic:', result[0])
+    print('p-value:', result[1])
+    print('Critical Values:')
+    for key, value in result[4].items():
+        print(f'   {key}: {value}')
+
+print("Original Data ADF Test:")
+adf_test(data['#Passengers'])
+```
+Differencing to make the data stationary
 ```python
 data_diff = data.diff().dropna()
 
-plt.figure(figsize=(10, 6))
-plt.plot(data_diff, label='Regular Differenced Data', color='blue')
-plt.title('Regular Differenced Time Series')
-plt.xlabel('Year')
-plt.ylabel('Differenced Number of Passengers')
-plt.legend()
-plt.show()
+print("\nDifferenced Data ADF Test:")
+adf_test(data_diff['#Passengers'])
 ```
-Seasonal Adjustment (subtracting the rolling mean to remove seasonality)
+Visualize the differenced data
 ```python
-rolling_mean = data.rolling(window=12).mean()
-seasonal_adjustment = data - rolling_mean
-
 plt.figure(figsize=(10, 6))
-plt.plot(seasonal_adjustment, label='Seasonally Adjusted Data', color='green')
-plt.title('Seasonally Adjusted Time Series')
-plt.xlabel('Year')
-plt.ylabel('Seasonally Adjusted Number of Passengers')
+plt.plot(data_diff, label='Differenced Data')
+plt.title('Differenced Time Series')
 plt.legend()
 plt.show()
-```
-Log Transformation
-```python
-data_log = np.log(data)
 
-plt.figure(figsize=(10, 6))
-plt.plot(data_log, label='Log Transformed Data', color='red')
-plt.title('Log Transformed Time Series')
-plt.xlabel('Year')
-plt.ylabel('Log(Number of Passengers)')
-plt.legend()
-plt.show()
 
 
 ```
